@@ -1,0 +1,48 @@
+{
+  "games": [
+    {
+      "id": "sixth-card",
+      "title": "Sixth Card",
+      "short": "SIXTH CARD",
+      "url": "../6nimmt/",
+      "players": "2-10",
+      "minutes": 45,
+      "tape": "bulls",
+      "tint": "#ff7a5c",
+      "description": "Everyone plays a card at once and they land lowest first. Put the sixth card on a row and you take the whole row, bull heads and all. Fewest bull heads wins."
+    },
+    {
+      "id": "deep-temple",
+      "title": "Deep Temple",
+      "short": "DEEP TEMPLE",
+      "url": "../MnbGold/",
+      "players": "2-10",
+      "minutes": 30,
+      "tape": "temple",
+      "tint": "#ffb347",
+      "description": "Push deeper into the temple or run home with your gems. Everyone decides at the same time. A second hazard of the same kind collapses the tunnel on whoever is still inside."
+    },
+    {
+      "id": "mainline",
+      "title": "MAINLINE",
+      "short": "MAINLINE",
+      "url": "../Mnbg-road/",
+      "players": "1-10",
+      "minutes": 30,
+      "tape": "routes",
+      "tint": "#8dff8a",
+      "description": "Four dice, seven rounds, one sheet each. Draw every roll into your own grid of road and rail, join the gateways into one network, and leave no loose ends."
+    },
+    {
+      "id": "gem-duel",
+      "title": "Gem Duel",
+      "short": "GEM DUEL",
+      "url": "../manubolgia-duel/",
+      "players": "2",
+      "minutes": 30,
+      "tape": "gem",
+      "tint": "#7fdcff",
+      "description": "A head-to-head race for gems. Draft tokens from the board, buy cards and claim royals. Win with 20 prestige, 10 crowns or 10 points in one colour."
+    }
+  ]
+}

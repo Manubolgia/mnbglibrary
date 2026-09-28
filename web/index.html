@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+    <title>MNBG Tape Library</title>
+    <meta name="description" content="Every Manubolgia game on one tape deck. Skip to a game, press play." />
+    <meta name="theme-color" content="#101113" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Tape Library" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./icons/icon.svg" type="image/svg+xml" />
+    <link rel="icon" href="./icons/icon-32.png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="./icons/icon-180.png" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="deck" aria-label="Tape library">
+      <span class="screw tl" aria-hidden="true"></span>
+      <span class="screw tr" aria-hidden="true"></span>
+      <span class="screw bl" aria-hidden="true"></span>
+      <span class="screw br" aria-hidden="true"></span>
+
+      <header class="brand">
+        <span class="logo">MNBG</span>
+        <span class="model">TL-01 <small>Tape Library</small></span>
+      </header>
+
+      <div class="window">
+        <div class="glass">
+          <canvas id="screen" aria-hidden="true"></canvas>
+          <div class="scan" aria-hidden="true"></div>
+          <div class="glare" aria-hidden="true"></div>
+        </div>
+        <div class="legend" aria-hidden="true">
+          <span>Digital dot-matrix display</span>
+          <span>Auto select</span>
+        </div>
+      </div>
+      <p id="sr" class="sr-only" aria-live="polite"></p>
+
+      <nav class="keys" aria-label="Controls">
+        <div class="key-slot">
+          <span class="print" aria-hidden="true">REW</span>
+          <button id="prev" class="key" aria-label="Previous game">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11.5 6v12L3 12zM21 6v12l-8.5-6z" /></svg>
+          </button>
+        </div>
+        <div class="key-slot wide">
+          <span class="print" aria-hidden="true">PLAY</span>
+          <button id="play" class="key play" aria-label="Play this game">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5v14l11-7z" /></svg>
+          </button>
+        </div>
+        <div class="key-slot">
+          <span class="print" aria-hidden="true">FF</span>
+          <button id="next" class="key" aria-label="Next game">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.5 6v12l8.5-6zM3 6v12l8.5-6z" /></svg>
+          </button>
+        </div>
+      </nav>
+
+      <div class="panel">
+        <div class="switch-wrap">
+          <span class="print">Beep</span>
+          <span class="print small" aria-hidden="true">Off</span>
+          <button id="sound" class="switch" role="switch" aria-checked="true" aria-label="Sound">
+            <span class="knob"></span>
+          </button>
+          <span class="print small" aria-hidden="true">On</span>
+        </div>
+        <span class="led-wrap" aria-hidden="true"><span class="led"></span><span class="print">Pwr</span></span>
+        <button id="install" class="small-key" hidden>Install</button>
+      </div>
+
+      <div class="grille" aria-hidden="true"></div>
+      <p class="stamp" aria-hidden="true">Solid state · 30 × 22 character VFD</p>
+    </main>
+
+    <div id="player" hidden>
+      <div id="frame"></div>
+      <button id="eject" aria-label="Eject: back to the library">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5l7 8H5zM5 16h14v3H5z" /></svg>
+      </button>
+      <div id="confirm" role="dialog" aria-modal="true" aria-labelledby="confirm-title" hidden>
+        <div class="sheet">
+          <p id="confirm-title">Eject</p>
+          <p class="small">Your seat in an online room is kept, so you can come back to it.</p>
+          <div class="row">
+            <button id="confirm-cancel" class="pill">Keep playing</button>
+            <button id="confirm-eject" class="pill hot">Eject</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="./js/app.js"></script>
+  </body>
+</html>
