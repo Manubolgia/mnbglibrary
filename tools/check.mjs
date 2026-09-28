@@ -30,7 +30,6 @@ for (const g of games || []) {
   if (g.minutes !== undefined && !(Number.isInteger(g.minutes) && g.minutes > 0)) fail(`${where}: "minutes" must be a whole number`);
   if (g.tint !== undefined && !/^#[0-9a-f]{6}$/i.test(g.tint)) fail(`${where}: "tint" must look like #5ff5e6`);
   if (g.tape && !existsSync(`${WEB}js/tapes/${g.tape}.js`)) fail(`${where}: no tape web/js/tapes/${g.tape}.js`);
-  if (g.exit !== undefined && g.exit !== 'game') fail(`${where}: "exit" is either "game" or left out`);
 }
 
 // ---- the tapes ------------------------------------------------------------

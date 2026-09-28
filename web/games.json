@@ -8,7 +8,6 @@
       "players": "2-10",
       "minutes": 45,
       "tape": "bulls",
-      "exit": "game",
       "tint": "#ff7a5c",
       "description": "Everyone plays a card at once and they land lowest first. Put the sixth card on a row and you take the whole row, bull heads and all. Fewest bull heads wins."
     },
@@ -20,7 +19,6 @@
       "players": "2-10",
       "minutes": 30,
       "tape": "temple",
-      "exit": "game",
       "tint": "#ffb347",
       "description": "Push deeper into the temple or run home with your gems. Everyone decides at the same time. A second hazard of the same kind collapses the tunnel on whoever is still inside."
     },
@@ -32,7 +30,6 @@
       "players": "1-10",
       "minutes": 30,
       "tape": "routes",
-      "exit": "game",
       "tint": "#8dff8a",
       "description": "Four dice, seven rounds, one sheet each. Draw every roll into your own grid of road and rail, join the gateways into one network, and leave no loose ends."
     },
@@ -44,7 +41,6 @@
       "players": "2",
       "minutes": 30,
       "tape": "gem",
-      "exit": "game",
       "tint": "#7fdcff",
       "description": "A head-to-head race for gems. Draft tokens from the board, buy cards and claim royals. Win with 20 prestige, 10 crowns or 10 points in one colour."
     }

@@ -41,9 +41,12 @@ build step: `web/` is served as it is.
   home screen, shown only when it runs inside the library. Android's back
   button (and Esc) asks "Eject?" first. On iPhone, the edge swipe does
   nothing, so nobody gets thrown out mid-game by accident.
-- **Bands**: the frame is padded clear of the notch and the home bar,
-  because a framed page isn't told about them. The padding is painted in the
-  game's own background colour, so the game still looks edge to edge.
+- **Edge to edge**: a framed page isn't told where the notch and home bar
+  are. The library measures them and passes them in as CSS variables, so a
+  game fills the screen exactly as it does on its own.
+- **Always current**: before loading a game, the library has the game's
+  service worker fetch any update (the loading screen covers the wait), so
+  the frame never opens a stale copy.
 
 | Control | Does |
 | --- | --- |
@@ -80,25 +83,31 @@ Add an entry to [`web/games.json`](web/games.json):
 | `minutes` | typical play time |
 | `tape` | the animation, a file in `web/js/tapes/`. Leave it out and the game gets a cassette with its name on the label and turning reels |
 | `tint` | the screen colour while this game is selected |
-| `exit` | `"game"` when the game has its own way back (below). Leave it out and a slim ⏏ tab sits on the screen edge instead |
 | `description` | a sentence or three. It is shown three lines at a time |
 
-A new game works immediately with the fallback cassette and the ⏏ tab.
-Drawing it a proper tape, and giving it its own way back, are optional.
+A new game works immediately with the fallback cassette, and a slim ⏏ tab
+on the screen edge to get back. Drawing it a proper tape, and giving it its
+own way back, are optional.
 
 ### A way back inside the game
 
 The library loads games in a frame named `mnbglibrary`. A game can check
 for that and show a button, ideally on its home screen so nobody leaves
-mid-round by accident. The button tells the library to eject:
+mid-round by accident. The button tells the library to eject. Saying hello on
+load hides the library's ⏏ tab. Until a game says hello, even a stale cached
+copy, the tab stays, so there's always a way out.
 
 ```js
 const inLibrary = window.parent !== window && window.name === 'mnbglibrary';
+if (inLibrary) window.parent.postMessage({ type: 'mnbglibrary:hello', exit: true }, location.origin);
 // on the button:
 window.parent.postMessage({ type: 'mnbglibrary:eject' }, location.origin);
 ```
 
-Then set `"exit": "game"` for it in `games.json`.
+For the notch and home bar, use `var(--mnbg-safe-top, env(safe-area-inset-top))`
+(and `-right`, `-bottom`, `-left`) wherever the game would use
+`env(safe-area-inset-*)`. On its own it behaves the same; in the library it
+gets the real values.
 
 Games from anywhere else can be listed too, but `url` then points to another
 site. Browsers keep separate storage per site, and some sites refuse to be

@@ -342,44 +342,67 @@ function play() {
   iframe.name = 'mnbglibrary';
   iframe.allow = 'fullscreen; wake-lock; clipboard-read; clipboard-write; web-share; autoplay';
   iframe.addEventListener('load', () => {
+    // An iframe fires load for its initial blank page too; wait for the game.
+    if (!iframe.getAttribute('src')) return;
     state.frameLoaded = true;
-    matchBands();
+    passInsets();
   });
-  iframe.src = new URL(game.url, location.href).href;
+  const url = new URL(game.url, location.href).href;
   const holder = $('frame');
   holder.replaceChildren(iframe);
-  holder.style.background = '#000';
-  // Games with their own way back don't need the floating eject tab.
-  $('eject').hidden = game.exit === 'game';
+  // The eject tab shows until the game says it has its own way back.
+  $('eject').hidden = false;
+  // Let the game's service worker fetch any update first, so the frame never
+  // opens a stale copy; the loading screen covers the wait.
+  freshen(url).then(() => {
+    if (holder.contains(iframe)) iframe.src = url;
+  });
   // No history entry: on iPhone a swipe from the edge would go "back" and
   // throw the player out mid-game. Android's back button asks first instead.
   watchBack();
 }
 
-// The frame is padded clear of the notch and the home bar (a framed page is
-// not told about them). Paint that padding in the game's own background so
-// the game still looks edge to edge; games change colour between screens and
-// themes, so keep matching while one is open.
-let bandTimer = 0;
-function matchBands() {
-  clearInterval(bandTimer);
-  const paint = () => {
-    const iframe = $('frame').querySelector('iframe');
-    if (!iframe) return clearInterval(bandTimer);
-    try {
-      const doc = iframe.contentDocument;
-      const clear = (c) => !c || c === 'transparent' || /rgba\(.*,\s*0\)$/.test(c);
-      let colour = getComputedStyle(doc.body).backgroundColor;
-      if (clear(colour)) colour = getComputedStyle(doc.documentElement).backgroundColor;
-      if (clear(colour)) colour = doc.querySelector('meta[name="theme-color"]')?.content;
-      if (!clear(colour)) $('frame').style.background = colour;
-    } catch {
-      // A game on another site can't be looked into; black it is.
-    }
+async function freshen(url) {
+  if (!('serviceWorker' in navigator)) return;
+  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+  const update = async () => {
+    const reg = await navigator.serviceWorker.getRegistration(url);
+    if (!reg) return;
+    await reg.update();
+    const worker = reg.installing || reg.waiting;
+    if (!worker) return;
+    await new Promise((resolve) => {
+      const done = () => ['activated', 'redundant'].includes(worker.state) && resolve();
+      worker.addEventListener('statechange', done);
+      done();
+    });
   };
-  paint();
-  bandTimer = setInterval(paint, 1000);
+  await Promise.race([update().catch(() => {}), wait(4000)]);
 }
+
+// A framed page is not told where the notch and home bar are. Measure them
+// here and hand them to the game as CSS variables (--mnbg-safe-top, ...), which
+// the games use in place of env(safe-area-inset-*), so they fill the screen
+// edge to edge exactly as they do on their own.
+const probe = document.createElement('div');
+probe.style.cssText =
+  'position:fixed;visibility:hidden;pointer-events:none;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)';
+document.body.append(probe);
+
+function passInsets() {
+  const iframe = $('frame').querySelector('iframe');
+  if (!iframe) return;
+  try {
+    const cs = getComputedStyle(probe);
+    const root = iframe.contentDocument.documentElement;
+    for (const side of ['top', 'right', 'bottom', 'left']) {
+      root.style.setProperty(`--mnbg-safe-${side}`, cs.getPropertyValue(`padding-${side}`) || '0px');
+    }
+  } catch {
+    // A game on another site can't be reached; it keeps its own insets.
+  }
+}
+window.addEventListener('resize', passInsets);
 
 // Android's back button (and Esc on a keyboard) asks before ejecting.
 let backWatcher = null;
@@ -405,7 +428,10 @@ function unwatchBack() {
 window.addEventListener('message', (e) => {
   const iframe = $('frame').querySelector('iframe');
   if (!iframe || e.source !== iframe.contentWindow || e.origin !== location.origin) return;
-  if (e.data && e.data.type === 'mnbglibrary:eject') eject();
+  if (!e.data) return;
+  if (e.data.type === 'mnbglibrary:eject') eject();
+  // The game has its own way back: the eject tab can go.
+  if (e.data.type === 'mnbglibrary:hello' && e.data.exit) $('eject').hidden = true;
 });
 
 function showFrame() {
@@ -426,7 +452,6 @@ function eject() {
   sound.eject();
   closeConfirm();
   unwatchBack();
-  clearInterval(bandTimer);
   const player = $('player');
   player.classList.remove('on');
   player.hidden = true;
