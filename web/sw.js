@@ -5,7 +5,7 @@
 // this app's prefix are ever cleared.
 
 const PREFIX = 'mnbglibrary-';
-const VERSION = `${PREFIX}v1`;
+const VERSION = `${PREFIX}v2`;
 const SHELL = [
   './',
   './index.html',

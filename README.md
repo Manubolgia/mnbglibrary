@@ -37,14 +37,19 @@ build step: `web/` is served as it is.
   - the games need no changes;
   - they always run their latest deploy;
   - they keep their own saved names, seats and offline caches.
-- **Eject**: the ⏏ button floats over the game. Drag it to either edge;
-  tap it to go back. Android's back button and browser back do the same.
+- **Getting back**: each game has a "Back to the library" button on its
+  home screen, shown only when it runs inside the library. Android's back
+  button (and Esc) asks "Eject?" first. On iPhone, the edge swipe does
+  nothing, so nobody gets thrown out mid-game by accident.
+- **Bands**: the frame is padded clear of the notch and the home bar,
+  because a framed page isn't told about them. The padding is painted in the
+  game's own background colour, so the game still looks edge to edge.
 
 | Control | Does |
 | --- | --- |
 | REW / FF keys, swipe the screen, ← / → | previous / next game |
 | PLAY key, Enter, Space | play the selected game |
-| ⏏, Esc, back | eject and return to the deck |
+| the game's "Back to the library", Esc / Android back (asks first) | eject and return to the deck |
 | BEEP switch | beeps and tape noises on or off |
 
 ## Adding a game
@@ -75,10 +80,25 @@ Add an entry to [`web/games.json`](web/games.json):
 | `minutes` | typical play time |
 | `tape` | the animation, a file in `web/js/tapes/`. Leave it out and the game gets a cassette with its name on the label and turning reels |
 | `tint` | the screen colour while this game is selected |
+| `exit` | `"game"` when the game has its own way back (below). Leave it out and a slim ⏏ tab sits on the screen edge instead |
 | `description` | a sentence or three. It is shown three lines at a time |
 
-A new game works immediately with the fallback cassette. Drawing it a proper
-tape is optional.
+A new game works immediately with the fallback cassette and the ⏏ tab.
+Drawing it a proper tape, and giving it its own way back, are optional.
+
+### A way back inside the game
+
+The library loads games in a frame named `mnbglibrary`. A game can check
+for that and show a button, ideally on its home screen so nobody leaves
+mid-round by accident. The button tells the library to eject:
+
+```js
+const inLibrary = window.parent !== window && window.name === 'mnbglibrary';
+// on the button:
+window.parent.postMessage({ type: 'mnbglibrary:eject' }, location.origin);
+```
+
+Then set `"exit": "game"` for it in `games.json`.
 
 Games from anywhere else can be listed too, but `url` then points to another
 site. Browsers keep separate storage per site, and some sites refuse to be

@@ -337,17 +337,76 @@ function play() {
 
   const iframe = document.createElement('iframe');
   iframe.title = game.title;
+  // Games look for this name to know they are in the library, and then offer
+  // a way back on their home screen (see "Adding a game" in the README).
+  iframe.name = 'mnbglibrary';
   iframe.allow = 'fullscreen; wake-lock; clipboard-read; clipboard-write; web-share; autoplay';
   iframe.addEventListener('load', () => {
     state.frameLoaded = true;
+    matchBands();
   });
   iframe.src = new URL(game.url, location.href).href;
   const holder = $('frame');
   holder.replaceChildren(iframe);
-  holder.style.background = game.background || '#000';
-  // Back (the Android button, or a swipe) comes back to the deck.
-  history.pushState({ playing: game.id }, '', `#${game.id}/play`);
+  holder.style.background = '#000';
+  // Games with their own way back don't need the floating eject tab.
+  $('eject').hidden = game.exit === 'game';
+  // No history entry: on iPhone a swipe from the edge would go "back" and
+  // throw the player out mid-game. Android's back button asks first instead.
+  watchBack();
 }
+
+// The frame is padded clear of the notch and the home bar (a framed page is
+// not told about them). Paint that padding in the game's own background so
+// the game still looks edge to edge; games change colour between screens and
+// themes, so keep matching while one is open.
+let bandTimer = 0;
+function matchBands() {
+  clearInterval(bandTimer);
+  const paint = () => {
+    const iframe = $('frame').querySelector('iframe');
+    if (!iframe) return clearInterval(bandTimer);
+    try {
+      const doc = iframe.contentDocument;
+      const clear = (c) => !c || c === 'transparent' || /rgba\(.*,\s*0\)$/.test(c);
+      let colour = getComputedStyle(doc.body).backgroundColor;
+      if (clear(colour)) colour = getComputedStyle(doc.documentElement).backgroundColor;
+      if (clear(colour)) colour = doc.querySelector('meta[name="theme-color"]')?.content;
+      if (!clear(colour)) $('frame').style.background = colour;
+    } catch {
+      // A game on another site can't be looked into; black it is.
+    }
+  };
+  paint();
+  bandTimer = setInterval(paint, 1000);
+}
+
+// Android's back button (and Esc on a keyboard) asks before ejecting.
+let backWatcher = null;
+function watchBack() {
+  if (backWatcher || !('CloseWatcher' in window)) return;
+  try {
+    backWatcher = new CloseWatcher();
+    backWatcher.onclose = () => {
+      backWatcher = null;
+      if (state.mode === 'playing' || state.mode === 'loading') openConfirm();
+    };
+  } catch {
+    backWatcher = null;
+  }
+}
+
+function unwatchBack() {
+  if (backWatcher) backWatcher.destroy();
+  backWatcher = null;
+}
+
+// A game asking to go back to the library: eject straight away.
+window.addEventListener('message', (e) => {
+  const iframe = $('frame').querySelector('iframe');
+  if (!iframe || e.source !== iframe.contentWindow || e.origin !== location.origin) return;
+  if (e.data && e.data.type === 'mnbglibrary:eject') eject();
+});
 
 function showFrame() {
   if (state.mode !== 'loading') return;
@@ -361,11 +420,13 @@ function showFrame() {
   stop();
 }
 
-function eject({ fromHistory = false } = {}) {
+function eject() {
   if (state.mode !== 'playing' && state.mode !== 'loading') return;
   const game = state.games[state.index];
   sound.eject();
   closeConfirm();
+  unwatchBack();
+  clearInterval(bandTimer);
   const player = $('player');
   player.classList.remove('on');
   player.hidden = true;
@@ -376,7 +437,7 @@ function eject({ fromHistory = false } = {}) {
   state.since = now();
   state.staticUntil = reduceMotion ? 0 : now() + 0.35;
   state.message = { text: '⏏ TAPE EJECTED', until: now() + 2.2 };
-  if (!fromHistory) history.replaceState(null, '', `#${game.id}`);
+  history.replaceState(null, '', `#${game.id}`);
   start();
   $('play').focus();
 }
@@ -418,6 +479,7 @@ press($('confirm-eject'), () => eject());
 press($('confirm-cancel'), () => {
   sound.click();
   closeConfirm();
+  watchBack();
 });
 press($('install'), async () => {
   const prompt = state.installPrompt;
@@ -436,13 +498,14 @@ window.addEventListener('beforeinstallprompt', (e) => {
 document.addEventListener('keydown', (e) => {
   if (e.metaKey || e.ctrlKey || e.altKey) return;
   if (state.mode === 'playing') {
-    if (e.key === 'Escape') ($('confirm').hidden ? openConfirm : closeConfirm)();
+    // With a CloseWatcher armed, Esc reaches it and it asks instead.
+    if (e.key === 'Escape' && !backWatcher) ($('confirm').hidden ? openConfirm : closeConfirm)();
     return;
   }
   if (e.key === 'ArrowLeft') skip(-1);
   else if (e.key === 'ArrowRight') skip(1);
   else if ((e.key === 'Enter' || e.key === ' ') && !(e.target instanceof HTMLButtonElement)) play();
-  else if (e.key === 'Escape' && state.mode === 'loading') history.back();
+  else if (e.key === 'Escape' && state.mode === 'loading') eject();
   else if (state.mode === 'boot') enterDeck();
   else return;
   e.preventDefault();
@@ -466,17 +529,13 @@ canvas.addEventListener('pointercancel', () => {
 });
 
 window.addEventListener('popstate', () => {
-  const playing = history.state && history.state.playing;
-  if ((state.mode === 'playing' || state.mode === 'loading') && !playing) {
-    eject({ fromHistory: true });
-    return;
-  }
   const id = location.hash.slice(1).split('/')[0];
   const i = state.games.findIndex((g) => g.id === id);
   if (state.mode === 'deck' && i >= 0 && i !== state.index) select(i);
 });
 
-// ---- the eject button: drag it anywhere along the edges, tap to eject ------
+// ---- the eject tab, for games without their own way back: a slim tab on
+// the screen edge, dragged up and down (or across to the other edge) ------
 
 function setupEject() {
   const btn = $('eject');
@@ -485,11 +544,13 @@ function setupEject() {
     pos = JSON.parse(localStorage.getItem(EJECT_KEY) || 'null');
   } catch {}
   const place = (p) => {
-    const size = btn.offsetWidth || 44;
+    const bw = btn.offsetWidth || 20;
+    const bh = btn.offsetHeight || 56;
     const w = window.innerWidth;
     const h = window.innerHeight;
-    const x = p.side === 'left' ? 6 : w - size - 6;
-    const y = Math.max(6, Math.min(h - size - 6, p.y * h - size / 2));
+    const x = p.side === 'left' ? 0 : w - bw;
+    const y = Math.max(8, Math.min(h - bh - 8, p.y * h - bh / 2));
+    btn.classList.toggle('left', p.side === 'left');
     btn.style.transform = `translate(${x}px, ${y}px)`;
   };
   pos = pos && (pos.side === 'left' || pos.side === 'right') ? pos : { side: 'right', y: 0.62 };
@@ -505,9 +566,8 @@ function setupEject() {
     if (!drag) return;
     if (!drag.moved && Math.hypot(e.clientX - drag.x, e.clientY - drag.y) < 8) return;
     drag.moved = true;
-    const size = btn.offsetWidth;
     btn.classList.add('dragging');
-    btn.style.transform = `translate(${e.clientX - size / 2}px, ${e.clientY - size / 2}px)`;
+    place({ side: e.clientX < window.innerWidth / 2 ? 'left' : 'right', y: e.clientY / window.innerHeight });
   });
   btn.addEventListener('pointerup', (e) => {
     if (!drag) return;
@@ -549,7 +609,6 @@ document.addEventListener('visibilitychange', () => {
 setupEject();
 state.since = now();
 start();
-if (history.state && history.state.playing) history.replaceState(null, '', location.hash.split('/')[0]);
 
 loadGames().then((games) => {
   state.games = games;
