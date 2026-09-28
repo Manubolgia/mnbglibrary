@@ -25,7 +25,8 @@ build step: `web/` is served as it is.
   - a bull watching cards land until the sixth takes the row;
   - a torch-lit stepped temple with an explorer and rockfalls;
   - a model railway with a flyover and thrown dice;
-  - a cut gem turning in the light.
+  - a cut gem turning in the light;
+  - a derelict ship venting air as its cabin lights die, all but two.
 
   Games without their own get a turning cassette with their name on the
   label.

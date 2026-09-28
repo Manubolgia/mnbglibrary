@@ -43,6 +43,17 @@
       "tape": "gem",
       "tint": "#7fdcff",
       "description": "A head-to-head race for gems. Draft tokens from the board, buy cards and claim royals. Win with 20 prestige, 10 crowns or 10 points in one colour."
+    },
+    {
+      "id": "coldwake",
+      "title": "Coldwake",
+      "short": "COLDWAKE",
+      "url": "../coldwake/",
+      "players": "1",
+      "minutes": 25,
+      "tape": "ship",
+      "tint": "#bfe6ff",
+      "description": "You wake from cryosleep on a dying ship, and something else is awake too. Roll three dice a round, explore the dark decks and reach a way off before the clock runs out. A new ship every run."
     }
   ]
 }
