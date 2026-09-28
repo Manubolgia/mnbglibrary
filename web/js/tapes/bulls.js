@@ -150,13 +150,16 @@ export default function create() {
     paint(scene, cam, px);
     blit(f, px, bx.x, bx.y);
 
-    // Numbers on the cards that have landed.
+    // A bull-head mark printed on each card that has landed.
     if (since <= 0) {
       cards.forEach((c, k) => {
         if (!c.on || s < LAND(k)) return;
-        const p = project(cam, px.w, px.h, c.x, c.y + 0.04, c.z + 0.02);
-        const label = String(numbers[k]);
-        if (p) big.text(Math.round(p.x / 2 - (label.length - 1) / 2), Math.round(p.y / 2), label, 1);
+        const p = project(cam, px.w, px.h, c.x, c.y, c.z + 0.02);
+        if (!p) return;
+        const x = bx.x + Math.round(p.x);
+        const y = bx.y + Math.round(p.y);
+        for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) f.put(x + dx, y + dy, ' ');
+        f.put(x, y, '▼', 1);
       });
     }
 

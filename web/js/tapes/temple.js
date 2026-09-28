@@ -125,6 +125,9 @@ export default function create() {
       if (k > 0.6) f.put(bx.x + p.x + (k > 0.8 ? 1 : -1), bx.y + p.y - 1, '.', 0.7);
     }
 
+    // The rallying cry as the explorer heads in, typed out like a caption.
+    const cry = 'WE PUSH ON BOYS!';
+    if (s > 0.3 && s < 3.6) big.center(9, cry.slice(0, Math.floor((s - 0.3) * 14)).padEnd(cry.length, ' '), 1);
     if (hazard && s > 4.3 && s < 6.5 && Math.floor(s * 4) % 2 === 0) big.center(0, 'ROCKFALL!', 1);
     big.text(25, 0, `◆${String(gems).padStart(3, ' ')}`, 0.8);
   };
