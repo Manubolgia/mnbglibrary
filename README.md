@@ -26,7 +26,9 @@ build step: `web/` is served as it is.
   - a torch-lit stepped temple with an explorer and rockfalls;
   - a model railway with a flyover and thrown dice;
   - a cut gem turning in the light;
-  - a derelict ship venting air as its cabin lights die, all but two.
+  - a derelict ship venting air as its cabin lights die, all but two;
+  - a pencil finishing a puzzle on squared paper before a fresh sheet,
+    and a new puzzle number, slides in.
 
   Games without their own get a turning cassette with their name on the
   label.
@@ -151,7 +153,7 @@ Scenes can also define:
 
 The characters the font draws are in [`web/js/font.js`](web/js/font.js). They
 cover A–Z, 0–9 and punctuation, plus blocks (`█▓▒░▀▄▌▐▬`), box drawing
-(`─│┌┐└┘├┤┬┴┼═║╔╗╚╝╪╫`) and symbols (`▶◀▲▼■●○◆◇♥★♪°·`).
+(`─│┌┐└┘├┤┬┴┼═║╔╗╚╝╪╫`) and symbols (`▶◀▲▼■□●○◆◇♥★♪°·`).
 
 `node tools/check.mjs` plays every tape for two minutes and fails if one
 throws or draws outside its box. CI runs it before every deploy.
@@ -202,6 +204,7 @@ site/
   Mnbg-road/        -> Mnbg-road/web
   manubolgia-duel/  -> manubolgia-duel
   MnbGold/          -> MnbGold/dist   (after npm run build with BASE_PATH=/MnbGold/)
+  mnbg-papergames/  -> mnbg-papergames/web
 ```
 
 ```sh

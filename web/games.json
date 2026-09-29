@@ -54,6 +54,17 @@
       "tape": "ship",
       "tint": "#bfe6ff",
       "description": "You wake from cryosleep on a dying ship, and something else is awake too. Roll three dice a round, explore the dark decks and reach a way off before the clock runs out. A new ship every run."
+    },
+    {
+      "id": "paper-games",
+      "title": "Paper Games",
+      "short": "PAPER GAMES",
+      "url": "../mnbg-papergames/",
+      "players": "1",
+      "minutes": 10,
+      "tape": "paper",
+      "tint": "#ffe45c",
+      "description": "Tectonic, Binairo and Sudoku, made on the spot. Pick a level and a size and a brand-new puzzle is built for you, with exactly one solution and no guessing needed."
     }
   ]
 }
