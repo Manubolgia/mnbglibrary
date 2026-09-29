@@ -107,6 +107,13 @@ if (inLibrary) window.parent.postMessage({ type: 'mnbglibrary:hello', exit: true
 window.parent.postMessage({ type: 'mnbglibrary:eject' }, location.origin);
 ```
 
+A game on this site can also call the deck directly, which doesn't depend on
+the message getting through:
+
+```js
+try { window.parent.mnbglibrary.eject(); } catch { /* fall back to the message */ }
+```
+
 For the notch and home bar, use `var(--mnbg-safe-top, env(safe-area-inset-top))`
 (and `-right`, `-bottom`, `-left`) wherever the game would use
 `env(safe-area-inset-*)`. On its own it behaves the same; in the library it

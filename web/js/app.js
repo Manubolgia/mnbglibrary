@@ -434,6 +434,10 @@ window.addEventListener('message', (e) => {
   if (e.data.type === 'mnbglibrary:hello' && e.data.exit) $('eject').hidden = true;
 });
 
+// Games on this site can also call the deck directly instead of posting a
+// message: window.parent.mnbglibrary.eject().
+window.mnbglibrary = { eject: () => eject() };
+
 function showFrame() {
   if (state.mode !== 'loading') return;
   state.mode = 'playing';
