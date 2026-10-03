@@ -28,7 +28,9 @@ build step: `web/` is served as it is.
   - a cut gem turning in the light;
   - a derelict ship venting air as its cabin lights die, all but two;
   - a pencil finishing a puzzle on squared paper before a fresh sheet,
-    and a new puzzle number, slides in.
+    and a new puzzle number, slides in;
+  - two stick fighters trading a read: a dash, a kick, a freeze-frame hit
+    and a knockdown, with health bars ticking down.
 
   Games without their own get a turning cassette with their name on the
   label.
@@ -212,6 +214,7 @@ site/
   manubolgia-duel/  -> manubolgia-duel
   MnbGold/          -> MnbGold/dist   (after npm run build with BASE_PATH=/MnbGold/)
   mnbg-papergames/  -> mnbg-papergames/web
+  Frame-feud/       -> Frame-feud/client/dist   (after npm run build)
 ```
 
 ```sh
