@@ -30,7 +30,11 @@ build step: `web/` is served as it is.
   - a pencil finishing a puzzle on squared paper before a fresh sheet,
     and a new puzzle number, slides in;
   - two stick fighters trading a read: a dash, a kick, a freeze-frame hit
-    and a knockdown, with health bars ticking down.
+    and a knockdown, with health bars ticking down;
+  - two cartoon robots square off in an arena: three, two, one, fight; the
+    spinner's disc bites, sparks fly and the wedge goes up, tumbling, onto
+    its back with crossed-out eyes for the count. Next bout, the flipper
+    launches the spinner instead.
 
   Games without their own get a turning cassette with their name on the
   label.
@@ -215,6 +219,7 @@ site/
   MnbGold/          -> MnbGold/dist   (after npm run build with BASE_PATH=/MnbGold/)
   mnbg-papergames/  -> mnbg-papergames/web
   Frame-feud/       -> Frame-feud/client/dist   (after npm run build)
+  Robot-fight/      -> Robot-fight/dist   (after npm run build)
 ```
 
 ```sh
