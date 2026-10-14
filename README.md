@@ -34,7 +34,10 @@ build step: `web/` is served as it is.
   - two cartoon robots square off in an arena: three, two, one, fight; the
     spinner's disc bites, sparks fly and the wedge goes up, tumbling, onto
     its back with crossed-out eyes for the count. Next bout, the flipper
-    launches the spinner instead.
+    launches the spinner instead;
+  - a cabin in the pines at night with one window lit, and a masked figure
+    walking up to the door; lightning, the window goes dark, and a torch
+    beam runs off into the trees.
 
   Games without their own get a turning cassette with their name on the
   label.
@@ -220,6 +223,7 @@ site/
   mnbg-papergames/  -> mnbg-papergames/web
   Frame-feud/       -> Frame-feud/client/dist   (after npm run build)
   Robot-fight/      -> Robot-fight/dist   (after npm run build)
+  Final-player/     -> Final-player/dist   (after npm run build)
 ```
 
 ```sh

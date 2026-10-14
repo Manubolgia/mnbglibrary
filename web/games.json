@@ -87,6 +87,17 @@
       "tape": "bots",
       "tint": "#c8ff3d",
       "description": "Design a combat robot inside 100 kg and one power core: armour, drive, weapons and its brain all cost weight, and every powered part draws on the core. Split the power, set the battle plan, then watch it fight on its own, from the garage to the World Cup."
+    },
+    {
+      "id": "final-player",
+      "title": "Final Player",
+      "short": "FINAL PLAYER",
+      "url": "../Final-player/",
+      "players": "1",
+      "minutes": 45,
+      "tape": "slasher",
+      "tint": "#ff4552",
+      "description": "A solo slasher night. You are the last one standing: roll against your fear, grab what you can find, lead the victims to an exit and take the killer down before the killer takes you. Six films, each with its own killer, map and rules."
     }
   ]
 }
